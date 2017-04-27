@@ -62,10 +62,20 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
+        if (isset($data['admin'])) {
+            $data['admin'] = 1;
+        } else {
+            $data['admin'] = 0;
+        }
+
+        var_dump($data);
+        //die();
+
         return User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
+            'admin' => $data['admin'],
         ]);
     }
 }

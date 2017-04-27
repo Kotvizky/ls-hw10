@@ -5,26 +5,69 @@ namespace App\Http\Controllers;
 use App\Category;
 use Illuminate\Http\Request;
 use Mockery\Exception;
+use function PHPSTORM_META\type;
 
 class CategoryController extends Controller
 {
+    private $commonURL = '/admin/categories/';
+
+    private function redirect($page = '')
+    {
+        return redirect("{$this->commonURL}$page");
+    }
+
+
     public function index()
     {
-        $catigories = Category::all();
-        $data['categories'] = $catigories;
+        $categories = Category::all();
+        foreach ($categories as $key => $value) {
+            $categories[$key]['num'] = $key+1;
+        }
+        $data['categories'] = $categories;
+        $data['table'] = [
+            'head'     => ['#','Имя','Описание','Действие'],
+            'fields'    => ['npp','name','desc'],
+            'rows'       => $categories,
+        ];
+        $data['button'] = [
+            'href' => "{$this->commonURL}create",
+            'text' => 'Создать',
+        ];
         return  view('categories.index',$data);
     }
 
     public function create()
     {
-        return view('categories.create');
+
+        $data['form'] = [
+            'title'  => "Создаем категорию",
+            'action' => "{$this->commonURL}store",
+            'method' => "post",
+            'submit' => 'Создать',
+        ];
+        $data['fields'] =[
+            [
+                'type' => 'text',
+                'name' => 'name',
+                'value' => '',
+                'label' => 'Имя'
+            ],
+            [
+                'type' => 'textarea',
+                'name' => 'desc',
+                'value' => '',
+                'label' => 'Описание'
+            ]
+        ];
+
+        return view('categories.create',$data);
     }
 
     public function store(Request $request)
     {
         $this->validate(
             $request,[
-                'name' => 'required|min:5',
+                'name' => 'required|min:3',
                 'desc' => 'required|min:5',
             ]
         );
@@ -32,7 +75,7 @@ class CategoryController extends Controller
         $category->name = $request->input('name');
         $category->desc = $request->input('desc');
         $category->save();
-        return redirect('/categories');
+        return $this->redirect();
     }
 
     public function edit($category_id)
@@ -42,7 +85,27 @@ class CategoryController extends Controller
         } catch (Exception $e){
             return abort(404);
         }
-        $data['category'] = $category;
+
+        $data['form'] = [
+            'title'  => "Редактируем категорию \"{$category['name']}\"",
+            'action' => "/admin/categories/update/$category->id",
+            'method' => "post",
+            'submit' => 'Обновить',
+        ];
+        $data['fields'] =[
+            [
+                'type' => 'text',
+                'name' => 'name',
+                'value' => $category['name'],
+                'label' => 'Имя'
+            ],
+            [
+                'type' => 'textarea',
+                'name' => 'desc',
+                'value' => $category['desc'],
+                'label' => 'Описание'
+            ]
+        ];
         return view('categories.edit',$data);
     }
 
@@ -50,7 +113,7 @@ class CategoryController extends Controller
     {
         $this->validate(
             $request,[
-                'name' => 'required|min:5',
+                'name' => 'required|min:3',
                 'desc' => 'required|min:5',
             ]
         );
@@ -62,7 +125,7 @@ class CategoryController extends Controller
         $category->name = $request->input('name');
         $category->desc = $request->input('desc');
         $category->save();
-        return redirect('/categories/edit/' . $category_id);
+        return $this->redirect("edit/$category_id");
     }
 
     public function destroy($category_id)
@@ -72,7 +135,7 @@ class CategoryController extends Controller
         } catch (Exception $e){
             return abort(404);
         }
-        return redirect('/categories');
+        return $this->redirect();
     }
 
 }
