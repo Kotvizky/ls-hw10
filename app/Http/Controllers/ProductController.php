@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Product;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -16,21 +17,29 @@ class ProductController extends Controller
 
     public function index()
     {
-        $categories = Category::all();
-        foreach ($categories as $key => $value) {
-            $categories[$key]['num'] = $key+1;
+        $table = Product::all();
+        foreach ($table as $key => $value) {
+            $table[$key]['num'] = $key+1;
         }
-        $data['categories'] = $categories;
-        $data['table'] = [
-            'head'     => ['#','Имя','Описание','Действие'],
-            'fields'    => ['npp','name','desc'],
-            'rows'       => $categories,
+        $data = [
+            'title' => 'Товары',
+            'table' => [
+                'head'     => ['#','Имя','Описание','Действие'],
+                'fields'    => ['num','name','desc'],
+                'rows'       => $table,
+            ],
+            'button' => [
+                'href' => "{$this->commonURL}create",
+                'text' => 'Создать',
+            ],
+            'action' => [
+                'edit'      => "{$this->commonURL}edit",
+                'destroy'    => "{$this->commonURL}destroy",
+            ]
+
         ];
-        $data['button'] = [
-            'href' => "{$this->commonURL}create",
-            'text' => 'Создать',
-        ];
-        return  view('categories.index',$data);
+
+        return  view('products.index',$data);
     }
 
     public function create()
@@ -68,7 +77,7 @@ class ProductController extends Controller
                 'desc' => 'required|min:5',
             ]
         );
-        $category = new Category();
+        $category = new Product();
         $category->name = $request->input('name');
         $category->desc = $request->input('desc');
         $category->save();

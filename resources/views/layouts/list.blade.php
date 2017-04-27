@@ -1,5 +1,5 @@
 <div class="panel panel-default">
-    <div class="panel-heading">Категории</div>
+    <div class="panel-heading">{{$title}}</div>
     <div class="col-md-6 ">
         <a href  = "{{$button['href']}}" class = "btn btn-primary">{{$button['text']}}</a>
     </div>
@@ -22,12 +22,12 @@
                         {{--<td>{{$field}}</td>--}}
                     @endforeach
 
-                    <td><a href="/admin/categories/edit/{{$row->id}}"
+                    <td><a href="{{$action['edit']}}/{{$row->id}}"
                            class="btn btn-default"
                            role="button" title="редактировать">
                             <span class="glyphicon glyphicon-pencil"></span>
                         </a>
-                        <form action="/admin/categories/destroy/{{$row->id}}" method="post">
+                        <form action="{{$action['destroy']}}/{{$row->id}}" method="post">
                             {{csrf_field()}}
                             {{method_field('DELETE')}}
                             <button type="submit" class="btn  btn-default" title="удалить">

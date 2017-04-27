@@ -30,11 +30,11 @@ Route::group(['prefix'=> 'admin','middleware' => 'auth'] , function () {
     Route::post('/categories/update/{id}','CategoryController@update');
 
     // Products
-    Route::get('/categories','ProductController@index');
-    Route::get('/categories/create','ProductController@create');
-    Route::post('/categories/store','ProductController@store');
-    Route::get('/categories/edit/{id}','ProductController@edit');
-    Route::delete('/categories/destroy/{id}','ProductController@destroy');
-    Route::post('/categories/update/{id}','ProductController@update');
+    Route::get('/products','ProductController@index');
+    Route::get('/products/create','ProductController@create');
+    Route::post('/products/store','ProductController@store');
+    Route::get('/products/edit/{id}','ProductController@edit');
+    Route::delete('/products/destroy/{id}','ProductController@destroy');
+    Route::post('/products/update/{id}','ProductController@update');
     
 });

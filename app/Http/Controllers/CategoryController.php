@@ -19,19 +19,26 @@ class CategoryController extends Controller
 
     public function index()
     {
-        $categories = Category::all();
-        foreach ($categories as $key => $value) {
-            $categories[$key]['num'] = $key+1;
+        $table = Category::all();
+        foreach ($table as $key => $value) {
+            $table[$key]['num'] = $key+1;
         }
-        $data['categories'] = $categories;
-        $data['table'] = [
-            'head'     => ['#','Имя','Описание','Действие'],
-            'fields'    => ['npp','name','desc'],
-            'rows'       => $categories,
-        ];
-        $data['button'] = [
-            'href' => "{$this->commonURL}create",
-            'text' => 'Создать',
+        $data = [
+            'title' => 'Категории',
+            'table' => [
+                'head'     => ['#','Имя','Описание','Действие'],
+                'fields'    => ['num','name','desc'],
+                'rows'       => $table,
+            ],
+            'button' => [
+                'href' => "{$this->commonURL}create",
+                'text' => 'Создать',
+            ],
+            'action' => [
+                'edit'      => "{$this->commonURL}edit",
+                'destroy'    => "{$this->commonURL}destroy",
+            ]
+
         ];
         return  view('categories.index',$data);
     }
