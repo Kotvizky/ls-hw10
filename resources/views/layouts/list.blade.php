@@ -18,8 +18,16 @@
             @foreach($table['rows'] as $row)
                 <tr>
                     @foreach($table['fields'] as $field)
-                        <td>{{$row->$field}}</td>
-                        {{--<td>{{$field}}</td>--}}
+                        @if(isset($field['img']))
+                            <?php $photoField = $field['fieldName']; ?>
+                            @if($row->$photoField == '')
+                                <td>Нет фото</td>
+                            @else
+                                <td> <img src ="{{ $field['img'] . $row->$photoField}}" width="100"> </td>
+                            @endif
+                        @else
+                            <td>{{$row->$field}}</td>
+                        @endif
                     @endforeach
 
                     <td><a href="{{$action['edit']}}/{{$row->id}}"
@@ -39,8 +47,10 @@
                 </tr>
             @endforeach
 
-
-            {{--@endforeach--}}
         </table>
+        @if(isset($pages))
+            {{ $pages }}
+        @endif
+
     </div>
 </div>

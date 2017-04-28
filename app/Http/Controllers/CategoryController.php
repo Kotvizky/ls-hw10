@@ -19,15 +19,12 @@ class CategoryController extends Controller
 
     public function index()
     {
-        $table = Category::all();
-        foreach ($table as $key => $value) {
-            $table[$key]['num'] = $key+1;
-        }
+        $table = Category::get();
         $data = [
             'title' => 'Категории',
             'table' => [
                 'head'     => ['#','Имя','Описание','Действие'],
-                'fields'    => ['num','name','desc'],
+                'fields'    => ['id','name','desc'],
                 'rows'       => $table,
             ],
             'button' => [
@@ -95,8 +92,10 @@ class CategoryController extends Controller
 
         $data['form'] = [
             'title'  => "Редактируем категорию \"{$category['name']}\"",
-            'action' => "/admin/categories/update/$category->id",
-            'method' => "post",
+            'attributes' => [
+                'action' => "/admin/categories/update/$category->id",
+                'method' => "post",
+            ],
             'submit' => 'Обновить',
         ];
         $data['fields'] =[

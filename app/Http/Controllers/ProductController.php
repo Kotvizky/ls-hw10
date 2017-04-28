@@ -2,12 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Category;
 use App\Product;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
     private $commonURL = '/admin/products/';
+    private $pathPhoto = 'img/products/';
+    private $linkPhoto = '/img/products/';
+    private $validateRules =  [
+            'name' => 'required|min:3',
+            'price' => 'required|numeric|min:0.01',
+            'desc' => 'required|min:5',
+        ];
+
 
     private function redirect($page = '')
     {
@@ -17,15 +26,28 @@ class ProductController extends Controller
 
     public function index()
     {
-        $table = Product::all();
+        $table = Product::with('category')
+            ->orderby('id','desc')
+            ->paginate(5);
+
         foreach ($table as $key => $value) {
             $table[$key]['num'] = $key+1;
+            if (isset($value->category)) {
+                $table[$key]['CategoryName'] = $value->category->name;//'test';// $value->category->name;
+            } else {
+                $table[$key]['CategoryName'] = 'не найдена';
+            }
         }
         $data = [
             'title' => 'Товары',
             'table' => [
-                'head'     => ['#','Имя','Описание','Действие'],
-                'fields'    => ['num','name','desc'],
+                'head'     => ['#','Имя','Кат.','Цена','Фото','Описание','Действие'],
+                'fields'    => ['id','name','CategoryName','price',
+                        [
+                            'img' =>$this->linkPhoto,
+                            'fieldName' => 'photo',
+                        ],
+                    'desc'],
                 'rows'       => $table,
             ],
             'button' => [
@@ -35,8 +57,8 @@ class ProductController extends Controller
             'action' => [
                 'edit'      => "{$this->commonURL}edit",
                 'destroy'    => "{$this->commonURL}destroy",
-            ]
-
+            ],
+            'pages' => $table->links(),
         ];
 
         return  view('products.index',$data);
@@ -45,8 +67,10 @@ class ProductController extends Controller
     public function create()
     {
 
+        $category = Category::get();
+
         $data['form'] = [
-            'title'  => "Создаем категорию",
+            'title'  => "Создаем товар",
             'action' => "{$this->commonURL}store",
             'method' => "post",
             'submit' => 'Создать',
@@ -59,85 +83,137 @@ class ProductController extends Controller
                 'label' => 'Имя'
             ],
             [
+                'type' => 'select',
+                'name' => 'category_id',
+                'text'  => 'name',
+                'value' => 'id',
+                'label' => 'Категория',
+                'selected' =>'2',
+                'table' => $category,
+            ],
+            [
+                'type' => 'number',
+                'name' => 'price',
+                'value' => '',
+                'label' => 'Цена'
+            ],
+            [
                 'type' => 'textarea',
                 'name' => 'desc',
                 'value' => '',
                 'label' => 'Описание'
-            ]
+            ],
         ];
 
-        return view('categories.create',$data);
+
+        return view('products.create',$data);
     }
 
     public function store(Request $request)
     {
-        $this->validate(
-            $request,[
-                'name' => 'required|min:3',
-                'desc' => 'required|min:5',
-            ]
-        );
-        $category = new Product();
-        $category->name = $request->input('name');
-        $category->desc = $request->input('desc');
-        $category->save();
-        return $this->redirect();
+        $this->validate($request,$this->validateRules);
+        $item = new Product();
+        $item->name = $request->input('name');
+        $item->price = $request->input('price');
+        $item->desc = $request->input('desc');
+        $item->category_id = $request->input('category_id');
+        $item->save();
+        return $this->redirect("edit/{$item->id}");
     }
 
-    public function edit($category_id)
+    public function edit($id)
     {
         try{
-            $category = Product::findOrFail($category_id);
+            $item = Product::findOrFail($id);
         } catch (Exception $e){
             return abort(404);
         }
 
         $data['form'] = [
-            'title'  => "Редактируем категорию \"{$category['name']}\"",
-            'action' => "/admin/categories/update/$category->id",
-            'method' => "post",
+            'title'  => "Редактируем товар \"{$item['name']}\"",
+            'attributes' => [
+                'action' => "{$this->commonURL}update/$item->id",
+                'method' => "post",
+                'enctype' => 'multipart/form-data',
+            ],
+            'file'  => ['text'=>'Загрузить'],
             'submit' => 'Обновить',
         ];
         $data['fields'] =[
             [
                 'type' => 'text',
                 'name' => 'name',
-                'value' => $category['name'],
+                'value' => $item['name'],
                 'label' => 'Имя'
+            ],
+            [
+                'type' => 'select',
+                'name' => 'category_id',
+                'text'  => 'name',
+                'value' => 'id',
+                'label' => 'Категория',
+                'selected' =>$item['category_id'],
+                'table' => Category::get(),
+            ],
+            [
+                'type' => 'number',
+                'name' => 'price',
+                'value' => $item['price'],
+                'label' => 'Цена'
             ],
             [
                 'type' => 'textarea',
                 'name' => 'desc',
-                'value' => $category['desc'],
+                'value' => $item['desc'],
                 'label' => 'Описание'
-            ]
+            ],
+            [
+                'type' => 'img',
+                'name' => 'name',
+                'photo'=> $item['photo'],
+                'path' => $this->linkPhoto,
+                'label' => 'Фото'
+            ],
         ];
-        return view('categories.edit',$data);
+        return view('products.edit',$data);
     }
 
-    public function update(Request $request, $category_id)
+    public function update(Request $request, $id)
     {
-        $this->validate(
-            $request,[
-                'name' => 'required|min:3',
-                'desc' => 'required|min:5',
-            ]
-        );
+        $this->validate($request,$this->validateRules);
         try{
-            $category = Product::findOrFail($category_id);
+            $item = Product::findOrFail($id);
         } catch (Exception $e){
             return abort(404);
         }
-        $category->name = $request->input('name');
-        $category->desc = $request->input('desc');
-        $category->save();
-        return $this->redirect("edit/$category_id");
+
+        if (!empty($_FILES['userFile']) && ($_FILES['userFile']['name'] != '')) {
+            if ($_FILES['userFile']["type"] == "image/jpeg") {
+                $fileName = $id .".jpg";
+                $uploadFile = $this->pathPhoto . $fileName;
+                if (move_uploaded_file($_FILES['userFile']['tmp_name'], $uploadFile)) {
+//                    $image = Image::make($uploadFile);
+//                    $image->resize(616, null, function ($image) {
+//                            $image->aspectRatio();
+//                        })
+//                        ->save($uploadFile);
+                    $item->photo = $fileName;
+                }
+            }
+        }
+
+        $item->name = $request->input('name');
+        $item->desc = $request->input('desc');
+        $item->category_id = $request->input('category_id');
+        $item->price = $request->input('price');
+        $item->save();
+        return $this->redirect("edit/$id");
     }
 
-    public function destroy($category_id)
+    public function destroy($id)
     {
         try{
-            Product::destroy($category_id);
+            Product::destroy($id);
         } catch (Exception $e){
             return abort(404);
         }
