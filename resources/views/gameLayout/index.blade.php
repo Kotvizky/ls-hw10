@@ -17,7 +17,7 @@
         <div class="logotype-container"><a href="/" class="logotype-link"><img src="/img/logo.png" alt="Логотип"></a></div>
         <nav class="main-navigation">
             <ul class="nav-list">
-                <li class="nav-list__item"><a href="#" class="nav-list__item__link">Главная</a></li>
+                <li class="nav-list__item"><a href="/" class="nav-list__item__link">Главная</a></li>
                 <li class="nav-list__item"><a href="/orders" class="nav-list__item__link">Мои заказы</a></li>
                 <li class="nav-list__item"><a href="#" class="nav-list__item__link">Новости</a></li>
                 <li class="nav-list__item"><a href="#" class="nav-list__item__link">О компании</a></li>
@@ -38,7 +38,7 @@
             <div class="authorization-block">
                 @if (isset(Auth::user()->id))
                     @if (Auth::user()->admin)
-                        <a href="/home" class="authorization-block__link">Админ</a>
+                        <a href="/home" class="authorization-block__link">{{ Auth::user()->name }}(Админпанель)</a>
                     @else
                         <a class="authorization-block__link"> {{ Auth::user()->name }} </a>
                     @endif

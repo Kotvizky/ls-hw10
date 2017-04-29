@@ -1,4 +1,10 @@
 @extends('layouts.app')
+@section('nav-app')
+    @if((isset(Auth::user()->admin)) &&Auth::user()->admin)
+        @parent
+    @endif
+@endsection
+
 
 @section('content')
 <div class="container">

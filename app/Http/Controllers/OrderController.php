@@ -6,6 +6,9 @@ namespace App\Http\Controllers;
 use App\Order;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App\Mail\SendMail;
+use Illuminate\Support\Facades\Mail;
+
 
 class OrderController extends Controller
 {
@@ -76,6 +79,14 @@ class OrderController extends Controller
         $item->name = $request->input('name');
         $item->email = $request->input('email');
         $item->save();
+        Mail::to(Config('constants.newOrderMail'))
+            ->send(new SendMail(
+                [
+                    'user'  =>  Auth::user()->name,
+                    'order' =>  $item->id,
+                ]
+            ));
+
         return redirect("/orders");
     }
 
@@ -169,6 +180,11 @@ class OrderController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try{
+            Order::destroy($id);
+        } catch (Exception $e){
+            return abort(404);
+        }
+        return redirect("$this->commonURL");
     }
 }

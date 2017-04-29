@@ -16,21 +16,19 @@ Route::get('/', function () {
 });
 */
 
-// index page
+Auth::routes();
+
+
 Route::get('/','MainController@index');
 Route::get('/categories/{id}', 'MainController@categories');
 Route::get('/products/{id}', 'MainController@products');
 Route::get('/orders', 'MainController@orders');
 
-Auth::routes();
-
 Route::get('/home', 'HomeController@index');
 
 Route::post('/orders/store', 'OrderController@store');
 
-
-
-Route::group(['prefix'=> 'admin','middleware' => 'auth'] , function () {
+Route::group(['prefix'=> 'admin','middleware' => ['auth','admin']] , function () {
     
     // Categories
     Route::get('/categories','CategoryController@index');
@@ -51,4 +49,6 @@ Route::group(['prefix'=> 'admin','middleware' => 'auth'] , function () {
     Route::get('/orders','OrderController@index');
     Route::get('/orders/edit/{id}','OrderController@edit');
     Route::post('/orders/update/{id}','OrderController@update');
+    Route::delete('/orders/destroy/{id}','OrderController@destroy');
+
 });

@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('create-button')
+@endsection
+
+
 @section('content')
     <div class="container">
         <div class="row">

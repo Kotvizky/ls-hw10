@@ -44,7 +44,9 @@
                 <!-- Left Side Of Navbar -->
                 <ul class="nav navbar-nav">
                     &nbsp;
-                    @include('layouts.nav-app')
+                    @section('nav-app')
+                        @include('layouts.nav-app')
+                    @show
                 </ul>
 
                 <!-- Right Side Of Navbar -->

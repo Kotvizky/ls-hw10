@@ -1,8 +1,10 @@
 <div class="panel panel-default">
     <div class="panel-heading">{{$title}}</div>
-    <div class="col-md-6 ">
-        <a href  = "{{$button['href']}}" class = "btn btn-primary">{{$button['text']}}</a>
-    </div>
+    @section('create-button')
+        <div class="col-md-6 ">
+            <a href  = "{{$button['href']}}" class = "btn btn-primary">{{$button['text']}}</a>
+        </div>
+    @show
     <div class="panel-body">
         <table class="table">
             <thead>
