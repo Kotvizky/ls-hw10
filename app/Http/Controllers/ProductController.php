@@ -192,11 +192,6 @@ class ProductController extends Controller
                 $fileName = $id .".jpg";
                 $uploadFile = $this->pathPhoto . $fileName;
                 if (move_uploaded_file($_FILES['userFile']['tmp_name'], $uploadFile)) {
-//                    $image = Image::make($uploadFile);
-//                    $image->resize(616, null, function ($image) {
-//                            $image->aspectRatio();
-//                        })
-//                        ->save($uploadFile);
                     $item->photo = $fileName;
                 }
             }

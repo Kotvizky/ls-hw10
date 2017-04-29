@@ -59,6 +59,20 @@
                     </div>
                 @endif
 
+                @if($field['type'] == 'checkbox')
+                    <div class="form-group">
+                        <label for="admin" class="col-md-2 control-label">{{$field['label']}}</label>
+                        <div class="col-md-8">
+                            <input type="checkbox" id="{{$field['name']}}" name="{{$field['name']}}" value="1"
+                                    @if (old($field['name'],$field['value'])==1)
+                                        checked
+                                    @endif
+                            >
+                        </div>
+                    </div>
+                @endif
+
+
                 @if($field['type'] == 'select')
                     <div class="form-group{{ $errors->has($field['name']) ? ' has-error' : '' }}">
                         <label for="{{$field['name']}}" class="col-md-2 control-label">{{$field['label']}}</label>
@@ -78,6 +92,7 @@
                     </div>
                 @endif
 
+
                 @if ($field['type'] == 'img')
                     <div class="form-group{{ $errors->has( $field['name'] ) ? ' has-error' : '' }}">
                         <label for="name" class="col-md-2 control-label">{{$field['label']}}</label>
@@ -92,6 +107,7 @@
                         </div>
                     </div>
                 @endif
+
 
             @endforeach
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Category;
 use App\Product;
+use App\Order;
 use Illuminate\Http\Request;
 
 class MainController extends Controller
@@ -15,77 +16,67 @@ class MainController extends Controller
      */
     public function index()
     {
-        $data['categories'] = Category::get();
         $products = Product::orderBy('id','desc')->paginate(6);
         $pagination = $products->links('gameLayout.pagenation-links');
-        $data['products'] = $products;
-        $data['pagination'] = $pagination;
-        return view('main',$data);
+        $data = [
+            'products'      => $products,
+            'categories'    => Category::get(),
+            'pagination'    => $pagination,
+            'ordersCount'   => Order::count(),
+        ];
+        return view('main.main',$data);
     }
 
     public function categories($id)
     {
-        $data['categories'] = Category::get();
         $products = Product::where('category_id',$id)->orderBy('id','desc')->paginate(6);
         $pagination = $products->links('gameLayout.pagenation-links');
-        $data['products'] = $products;
-        $data['pagination'] = $pagination;
-        return view('main',$data);
+        $data = [
+            'products'      => $products,
+            'categories'    => Category::get(),
+            'pagination'    => $pagination,
+            'ordersCount'   => Order::count(),
+        ];
+        return view('main.main',$data);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function products($id)
     {
-        //
+        try{
+            $item = Product::with('category')->findOrFail($id);
+        } catch (Exception $e){
+            return abort(404);
+        }
+
+        $data = [
+            'categories'=> Category::get(),
+            'product'   => $item,
+            'products'  => Product::orderBy('id','desc')->paginate(3),
+            'ordersCount'   => Order::count(),
+            'purchase'     => [
+                'attributes' => [
+                    'method' => 'post',
+                    'action' => '/orders/store',
+                ],
+            ]
+        ];
+
+        return view('main.product',$data);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    public function orders()
     {
-        //
+        $orders = Order::with('product')->orderBy('id','desc')->paginate(6);
+        $pagination = $orders->links('gameLayout.pagenation-links');
+
+        $data = [
+            'orders'        => $orders,
+            'pagination'    => $pagination,
+            'categories'    => Category::get(),
+            'ordersCount'   => Order::count(),
+        ];
+
+        return view('main.index-order',$data);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }

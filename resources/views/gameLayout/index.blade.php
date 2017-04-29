@@ -5,9 +5,11 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link rel="stylesheet" href="/css/libs.min.css">
-    <link rel="stylesheet" href="/css/main.css">
-    <link rel="stylesheet" href="/css/media.css">
+    @section('index-css')
+        <link rel="stylesheet" href="/css/libs.min.css">
+        <link rel="stylesheet" href="/css/main.css">
+        <link rel="stylesheet" href="/css/media.css">
+    @show
 </head>
 <body>
 <div class="main-wrapper">
@@ -16,7 +18,7 @@
         <nav class="main-navigation">
             <ul class="nav-list">
                 <li class="nav-list__item"><a href="#" class="nav-list__item__link">Главная</a></li>
-                <li class="nav-list__item"><a href="#" class="nav-list__item__link">Мои заказы</a></li>
+                <li class="nav-list__item"><a href="/orders" class="nav-list__item__link">Мои заказы</a></li>
                 <li class="nav-list__item"><a href="#" class="nav-list__item__link">Новости</a></li>
                 <li class="nav-list__item"><a href="#" class="nav-list__item__link">О компании</a></li>
             </ul>
@@ -26,10 +28,12 @@
         </div>
         <div class="header-container">
             <div class="payment-container">
+                @section('payment-basket')
                 <div class="payment-basket__status">
                     <div class="payment-basket__status__icon-block"><a class="payment-basket__status__icon-block__link"><i class="fa fa-shopping-basket"></i></a></div>
-                    <div class="payment-basket__status__basket"><span class="payment-basket__status__basket-value">0</span><span class="payment-basket__status__basket-value-descr">товаров</span></div>
+                    <div class="payment-basket__status__basket"><span class="payment-basket__status__basket-value">{{$ordersCount}}</span><span class="payment-basket__status__basket-value-descr">товаров</span></div>
                 </div>
+                @show
             </div>
             <div class="authorization-block">
                 @if (isset(Auth::user()->id))
@@ -134,6 +138,11 @@
         </div>
     </footer>
 </div>
-<script src="/js/main.js"></script>
+@section('purchase-form')
+@show
+
+@section('index-script')
+    <script src="/js/main.js"></script>
+@show
 </body>
 </html>
