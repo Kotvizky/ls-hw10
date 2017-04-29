@@ -9,6 +9,7 @@ use function PHPSTORM_META\type;
 
 class CategoryController extends Controller
 {
+
     private $commonURL = '/admin/categories/';
 
     private function redirect($page = '')

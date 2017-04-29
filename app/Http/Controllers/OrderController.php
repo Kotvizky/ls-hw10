@@ -143,7 +143,7 @@ class OrderController extends Controller
                 'label' => 'Закрыт'
             ],
         ];
-        return view('products.edit',$data);
+        return view('orders.edit',$data);
     }
 
     public function update(Request $request, $id)

@@ -50,5 +50,9 @@ Route::group(['prefix'=> 'admin','middleware' => ['auth','admin']] , function ()
     Route::get('/orders/edit/{id}','OrderController@edit');
     Route::post('/orders/update/{id}','OrderController@update');
     Route::delete('/orders/destroy/{id}','OrderController@destroy');
-
+    // users
+    Route::get('/users','UserController@index');
+    Route::get('/users/edit/{id}','UserController@edit');
+    Route::post('/users/update/{id}','UserController@update');
+    Route::delete('/users/destroy/{id}','UserController@destroy');
 });
